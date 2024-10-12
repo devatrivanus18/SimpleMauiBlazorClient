@@ -1,0 +1,12 @@
+﻿@page "/todoitem"
+@namespace SampleAPIMauiBlazorClient
+
+
+<RadzenDataGrid AllowFiltering="true" AllowColumnReorder="true" AllowSorting="true" AllowColumnResize="true" Data="@TodoItems" TItem="MTodoItem">
+    <Columns>
+        <RadzenDataGridColumn TItem="MTodoItem" Property="@nameof(MTodoItem.Id)" Title="ID" />
+        <RadzenDataGridColumn TItem="MTodoItem" Property="@nameof(MTodoItem.Title)" Title="Title" />
+        <RadzenDataGridColumn TItem="MTodoItem" Property="@nameof(MTodoItem.Completed)" Title="Status" />
+    </Columns>
+</RadzenDataGrid>
+

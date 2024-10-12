@@ -1,0 +1,71 @@
+﻿@inherits LayoutComponentBase
+@* Required *@
+<MudThemeProvider />
+<MudPopoverProvider />
+
+@* Needed for dialogs *@
+<MudDialogProvider />
+
+@* Needed for snackbars *@
+<MudSnackbarProvider />
+<RadzenComponents />
+<RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
+    <RadzenHeader>
+        <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0">
+            <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+            <RadzenLabel Text="Header" />
+        </RadzenStack>
+    </RadzenHeader>
+    <RadzenSidebar @bind-Expanded="@sidebarExpanded">
+        <RadzenPanelMenu Click="@SidebarMenuItem_Click">
+            <RadzenPanelMenuItem Text="Home" Icon="home" />
+            <RadzenPanelMenuItem Text="Todo Item" Icon="account_box" />
+            <RadzenPanelMenuItem Text="Game" Icon="account_box" />
+            <RadzenPanelMenuItem Text="Employee" Icon="account_box" />
+        </RadzenPanelMenu>
+        <div class="rz-p-4">
+            Sidebar
+        </div>
+    </RadzenSidebar>
+    <RadzenBody>
+        <div class="rz-p-4">
+            @Body
+        </div>
+    </RadzenBody>
+</RadzenLayout>
+
+<style>
+    /* Hide scrollbar for modern browsers */
+    .rz-body::-webkit-scrollbar {
+        display: none;
+    }
+
+    .rz-body {
+        user-select : none;
+        scrollbar-width: none; /* For Firefox */
+        -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    }
+
+</style>
+
+@code {
+    [Inject]
+    NavigationManager? navigationManager { get; set; }
+    bool sidebarExpanded = false;
+    void SidebarMenuItem_Click(MenuItemEventArgs args)
+    {
+        if (args is not null)
+        {
+            var menu = args.Text.Replace(" ","").ToLower();
+            if (menu == "home")
+            {
+                navigationManager.NavigateTo("/");
+            }
+            else
+            {
+                navigationManager.NavigateTo($"/{menu}");
+            }
+            sidebarExpanded = false;
+        }
+    }
+}

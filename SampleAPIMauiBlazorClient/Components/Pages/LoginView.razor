@@ -1,0 +1,46 @@
+﻿@page "/"
+@using SampleAPIMauiBlazorClient.Components.Layout
+@layout LoginLayout
+
+<style>
+    .my-custom-class {
+        backdrop-filter: blur(10px);
+    }
+</style>
+
+
+<MudDialog Visible="true" Gutters="true" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h5">
+            Please login first...
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12">
+                <MudTextField Required="true" RequiredError="wajib diisi" @bind-Value="@_username" Label="First Name" Variant="MudBlazor.Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12">
+                <MudTextField @bind-Value="_password" Label="Password" Variant="MudBlazor.Variant.Text" InputType="@InputType.Password" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.VisibilityOff" AdornmentAriaLabel="Show Password" />
+            </MudItem>
+        </MudGrid>
+        <br />
+        <br />
+        <br />
+        <MudGrid>
+            <MudItem>
+                <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Primary" Class="px-10">Save</MudButton>
+                <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Error" Class="px-10">Close</MudButton>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+</MudDialog>
+
+
+@code{
+    private readonly MudBlazor.DialogOptions _dialogOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = false };
+
+    public string? _username { get; set; }
+    public string? _password { get; set; }
+    public bool _isRememberMe { get; set; }
+}

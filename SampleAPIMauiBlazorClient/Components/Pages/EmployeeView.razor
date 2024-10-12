@@ -1,0 +1,151 @@
+﻿@page "/employee"
+@inject EmployeeService ApiService
+
+<style>
+    .my-custom-class {
+        backdrop-filter: blur(10px);
+    }
+</style>
+
+<MudFab OnClick="OpenDialogNewData" StartIcon="@Icons.Material.Filled.Add" Label="Add Data" />
+<br />
+<br />
+@if (employees == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <MudDataGrid Hover="true" Items="@employees" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+    <Columns>
+        <PropertyColumn Property="x => x.FirstName" />
+        <PropertyColumn Property="x => x.LastName" />
+        <PropertyColumn Property="x => x.DateOfBirth" Title="Years Employed" />
+        <PropertyColumn Property="x => x.PhoneNumber" />
+        <PropertyColumn Property="x => x.Email" />
+        <TemplateColumn CellClass="d-flex justify-end">
+            <CellTemplate>
+                <MudStack Row>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="@Size.Small" OnClick="@(() => DeleteEmployee(context.Item.EmployeeId))" Variant="@MudBlazor.Variant.Filled" Color="@Color.Error"/>
+                        <MudIconButton OnClick="@(() => OpenDialogUpdateData(context.Item.EmployeeId))" Icon="@Icons.Material.Filled.EditNote" Size="@Size.Small" Variant="@MudBlazor.Variant.Filled" Color="@Color.Primary" />
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    </MudDataGrid>
+}
+
+
+
+<MudDialog @bind-Visible="_visible" Gutters="true" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h5">
+            @titleDialog
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="6">
+                <MudTextField Required="true" RequiredError="wajib diisi" @bind-Value="@objEmployee.FirstName" Label="First Name" Variant="MudBlazor.Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="6">
+                <MudTextField @bind-Value="@objEmployee.LastName" Label="Last Name" Variant="MudBlazor.Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="6">
+                <MudTextField @bind-Value="@objEmployee.DateOfBirth" InputType="InputType.Date" Label="Date" Variant="MudBlazor.Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="6">
+                <MudTextField @bind-Value="@objEmployee.PhoneNumber" InputType="InputType.Number" Label="Phone" Variant="MudBlazor.Variant.Text"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="6">
+                <MudTextField @bind-Value="@objEmployee.Email" InputType="InputType.Email" Label="Email" Variant="MudBlazor.Variant.Text"></MudTextField>
+            </MudItem>
+
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="MudBlazor.Variant.Filled" OnClick="AddNewEmployee" Color="Color.Primary" Class="px-10">Save</MudButton>
+        <MudButton Variant="MudBlazor.Variant.Filled" OnClick="CloseDialog" Color="Color.Error" Class="px-10">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+
+@code {
+    private DateTime _date = DateTime.Today;
+    private bool _visible;
+    private int _rating;
+    private readonly MudBlazor.DialogOptions _dialogOptions = new() { FullWidth = true ,BackgroundClass = "my-custom-class", BackdropClick=false };
+
+    string titleDialog { get; set; } = "New Data";
+
+    private void OpenDialogNewData()
+    {
+        objEmployee = new Employee();
+        titleDialog = "New Data";
+        _visible = true;
+    } 
+
+    private void OpenDialogUpdateData(long id)
+    {
+        objEmployee = employees.FirstOrDefault(x => x.EmployeeId == id);
+        titleDialog = $"Update Data : {objEmployee.FirstName} {objEmployee.LastName}";
+        _visible = true;
+
+    }
+
+    private void OnDateChanged(DateTime? date)
+    {
+        if (date.HasValue)
+        {
+            _date = date.Value;
+            objEmployee.DateOfBirth = _date; // Mengupdate DateOfBirth
+        }
+    }
+
+    private void CloseDialog() => _visible = false;
+    private List<Employee> employees;
+
+    Employee? objEmployee { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = await ApiService.GetEmployeesAsync();
+    }
+
+    private async Task DeleteEmployee(long id)
+    {
+        if (await ApiService.DeleteEmployeeAsync(id))
+        {
+            employees = await ApiService.GetEmployeesAsync(); // Refresh the list
+        }
+    }
+
+    private async Task GetEmployeeDetails(long id)
+    {
+        var employee = await ApiService.GetEmployeeAsync(id);
+        // Handle editing the employee details (e.g., show in a form)
+    }
+
+    private async Task AddNewEmployee()
+    {
+        var dataExisting = employees.FirstOrDefault(x => x.EmployeeId == objEmployee.EmployeeId);
+        if (dataExisting is null)
+        {
+            if (await ApiService.AddEmployeeAsync(objEmployee))
+            {
+                objEmployee = new Employee();
+                employees = await ApiService.GetEmployeesAsync(); // Refresh the list
+            }
+
+        }
+        else
+        {
+            if (await ApiService.UpdateEmployeeAsync(objEmployee))
+            {
+                objEmployee = new Employee();
+                employees = await ApiService.GetEmployeesAsync(); // Refresh the list
+            }
+        }
+    }
+}

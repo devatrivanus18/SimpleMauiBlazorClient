@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>SampleAPIMauiBlazorClient</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="SampleAPIMauiBlazorClient.styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <div class="status-bar-safe-area"></div>
+
+    <!--<div style="height:100%; margin:0; display:flex; align-items:center;justify-content:center" id="app">
+        <span class="loader"></span>
+    </div>-->
+
+    <div id="app">
+        <div style="position:absolute; top:30vh; width:100%; text-align:center">
+            <h1>My application</h1>
+            <div style="display:flex; justify-content:center; align-items:center">
+                <span class="loader"></span>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 2px solid #FFF;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+            .loader::after,
+            .loader::before {
+                content: '';
+                box-sizing: border-box;
+                position: absolute;
+                left: 0;
+                top: 0;
+                background: #FF3D00;
+                width: 6px;
+                height: 6px;
+                transform: translate(150%, 150%);
+                border-radius: 50%;
+            }
+
+            .loader::before {
+                left: auto;
+                top: auto;
+                right: 0;
+                bottom: 0;
+                transform: translate(-150%, -150%);
+            }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+
+</body>
+
+</html>
