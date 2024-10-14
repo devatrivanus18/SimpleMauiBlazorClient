@@ -1,4 +1,16 @@
 ﻿@page "/home"
+@attribute [Authorize]
 @namespace SampleAPIMauiBlazorClient.Components.Pages
+@using Microsoft.AspNetCore.Authorization
 
+
+<MudButton OnClick="LogOut" Variant="MudBlazor.Variant.Filled" Color="Color.Warning" Class="px-10">Close</MudButton>
+
+@code
+{
+    async void LogOut()
+    {
+        SecureStorage.Default.Remove("authToken");
+    }
+}
 

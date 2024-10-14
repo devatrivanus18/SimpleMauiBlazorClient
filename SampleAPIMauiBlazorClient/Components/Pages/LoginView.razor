@@ -1,5 +1,7 @@
 ﻿@page "/"
 @using SampleAPIMauiBlazorClient.Components.Layout
+@inject AuthService AuthService
+@inject NavigationManager _nm
 @layout LoginLayout
 
 <style>
@@ -12,7 +14,7 @@
 <MudDialog Visible="true" Gutters="true" Options="_dialogOptions">
     <TitleContent>
         <MudText Typo="Typo.h5">
-            Please login first...
+            @_title
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -21,16 +23,16 @@
                 <MudTextField Required="true" RequiredError="wajib diisi" @bind-Value="@_username" Label="First Name" Variant="MudBlazor.Variant.Text"></MudTextField>
             </MudItem>
             <MudItem xs="12" sm="12" md="12">
-                <MudTextField @bind-Value="_password" Label="Password" Variant="MudBlazor.Variant.Text" InputType="@InputType.Password" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.VisibilityOff" AdornmentAriaLabel="Show Password" />
+                <MudTextField @bind-Value="_password" Label="Password" Variant="MudBlazor.Variant.Text" InputType="@(_isShowPassword ? InputType.Password : InputType.Text )" Adornment="Adornment.End" OnAdornmentClick="@(() => {_isShowPassword = !_isShowPassword;})" AdornmentIcon="@(_isShowPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility )" AdornmentAriaLabel="Show Password" />
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12">
+                <MudCheckBox @bind-Value="@_isRememberMe" Label="Remember Me" Color="Color.Primary"></MudCheckBox>
             </MudItem>
         </MudGrid>
-        <br />
-        <br />
-        <br />
         <MudGrid>
             <MudItem>
-                <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Primary" Class="px-10">Save</MudButton>
-                <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Error" Class="px-10">Close</MudButton>
+                <MudButton OnClick="@ProsesLogin" Variant="MudBlazor.Variant.Filled" Color="Color.Success" Class="px-10">Login</MudButton>
+                <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Warning" Class="px-10">Close</MudButton>
             </MudItem>
         </MudGrid>
     </DialogContent>
@@ -43,4 +45,36 @@
     public string? _username { get; set; }
     public string? _password { get; set; }
     public bool _isRememberMe { get; set; }
+    public bool _isShowPassword { get; set; } = false;
+
+    public string _title { get; set; } = "Please login first...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await SecureStorage.Default.GetAsync("authToken");
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            _nm.NavigateTo("/home");
+        }
+        await base.OnInitializedAsync();
+    }
+
+    async void ProsesLogin()
+    {
+        if (!string.IsNullOrWhiteSpace(_username) && !string.IsNullOrWhiteSpace(_password))
+        {
+            var result = await AuthService.LoginAsync(_username, _password);
+
+            if (result)
+            {
+                _nm.NavigateTo("/home");
+
+            }
+            else
+            {
+                _title = "Password atau username salah";
+            }
+            StateHasChanged();
+        }
+    }
 }
