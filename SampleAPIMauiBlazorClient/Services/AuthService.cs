@@ -30,6 +30,7 @@ public class AuthService
         {
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
             await SecureStorage.Default.SetAsync("authToken", result.Token);
+            await SecureStorage.Default.SetAsync("user", username);
             return true;
         }
 
@@ -39,6 +40,7 @@ public class AuthService
     public async Task LogoutAsync()
     {
          SecureStorage.Default.Remove("authToken");
+        SecureStorage.Default.Remove("user");
     }
 }
 

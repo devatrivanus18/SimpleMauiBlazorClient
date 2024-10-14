@@ -13,7 +13,15 @@
     <RadzenHeader>
         <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0">
             <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
-            <RadzenLabel Text="Header" />
+            <RadzenProfileMenu Style="position:absolute; right:0; padding-right:5px">
+                <Template>
+                    <RadzenLabel Text="@User" />
+                </Template>
+                <ChildContent>
+                    <RadzenButton Text="My Profile" Variant="Radzen.Variant.Text" Icon="account_circle"></RadzenButton>
+                    <RadzenButton Click="@LogOut" Variant="Radzen.Variant.Text" Text="Logout" Icon="logout"></RadzenButton>
+                </ChildContent>
+            </RadzenProfileMenu>
         </RadzenStack>
     </RadzenHeader>
     <RadzenSidebar @bind-Expanded="@sidebarExpanded">
@@ -51,8 +59,17 @@
 
 @code {
     [Inject]
-    NavigationManager? navigationManager { get; set; }
+    NavigationManager navigationManager { get; set; }
     bool sidebarExpanded = false;
+
+    public string? User { get; set; } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = await SecureStorage.Default.GetAsync("user") ?? "Anonim";
+        await base.OnInitializedAsync();
+    }
+
     void SidebarMenuItem_Click(MenuItemEventArgs args)
     {
         if (args is not null)
@@ -68,5 +85,11 @@
             }
             sidebarExpanded = false;
         }
+    }
+
+    void LogOut()
+    {
+        SecureStorage.Default.Remove("authToken");
+        navigationManager.NavigateTo("/");
     }
 }
